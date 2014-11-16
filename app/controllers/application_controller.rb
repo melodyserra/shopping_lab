@@ -7,10 +7,28 @@ private
 
   # Ensure a user is logged in
   def confirm_logged_in
+    unless session[:user_id]
+      flash[:notice] = "Please log in."
+      redirect_to('/login')
+    end
   end
 
   # Stop a logged in user from going to the sign up page
   def prevent_login_signup
+    if session[:user_id]
+      redirect_to('/home')
+    end
+  end
+
+  def prevent_user(user)
+    if user.nil? or session[:user_id] != user.id
+      redirect_to('/products')
+    end
+  end
+
+  def current_user
+    return unless session[:user_id]
+    @current_user ||= User.find(session[:user_id])
   end
 
 end

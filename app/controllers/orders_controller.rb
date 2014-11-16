@@ -3,19 +3,24 @@ class OrdersController < ApplicationController
   before_action :confirm_logged_in
 
   def index
-
+    prevent_user
+    @orders = User.find_by_id(params[:user_id]).orders
   end
 
   def show
-
+    prevent_user
+    @order = Order.find(params[:order_id])
   end
 
   def edit
-
+    prevent_user
+    @order = Order.find(params[:order_id])
   end
 
   def new
-
+    prevent_user
+    @order = Order.new
+    @products = Product.all
   end
 
   def create
@@ -37,6 +42,9 @@ class OrdersController < ApplicationController
     params.require(:order).permit(:name, :user_id)
   end
 
-
-
+  def prevent_user
+    if session[:is_admin] != true and params[:user_id].to_i != @current_user.id
+      redirect_to products_path
+    end
+  end
 end
